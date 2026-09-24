@@ -1,7 +1,10 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Form } from "react-hook-form";
 
 export default function NewReservationPage() {
+
+
   return (
     <Stack spacing={3}>
       <Box>
@@ -40,6 +43,14 @@ export default function NewReservationPage() {
               and refresh conventions. The README contains the complete acceptance rules.
             </Typography>
             {/* TODO(candidate): Implement the Create Reservation form. */}
+
+            <Form>
+
+
+
+            </Form>
+
+
           </Stack>
         </CardContent>
       </Card>
