@@ -18,8 +18,9 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { ReservationFormData } from "@/types/reservation";
 import ReservationItemsForm from "./reserveration-items-form";
 
 function toHour(value: Date) {
@@ -30,11 +31,15 @@ function toHour(value: Date) {
 
 export type ReservationFormProps = {
   locations: Location[];
+  defaultValues?: ReservationFormData;
+  submitLabel?: string;
   onSubmit: (input: ReservationInput) => Promise<void>;
 };
 
 export default function ReservationForm({
   locations = [],
+  defaultValues,
+  submitLabel = "Save Reservation",
   onSubmit,
 }: ReservationFormProps) {
   const {
@@ -44,14 +49,23 @@ export default function ReservationForm({
     formState: { isSubmitting },
   } = useForm<ReservationInput>({
     resolver: zodResolver(reservationSchema),
-    defaultValues: {
-      locationId: "",
-      startAt: toHour(new Date()),
-      endAt: toHour(new Date()),
-      note: "",
-      status: "DRAFT",
-      items: [],
-    },
+    defaultValues: defaultValues
+      ? {
+          locationId: defaultValues.locationId,
+          startAt: toHour(new Date(defaultValues.startAt)),
+          endAt: toHour(new Date(defaultValues.endAt)),
+          note: defaultValues.note,
+          status: defaultValues.status,
+          items: defaultValues.items,
+        }
+      : {
+          locationId: "",
+          startAt: toHour(new Date()),
+          endAt: toHour(new Date()),
+          note: "",
+          status: "DRAFT",
+          items: [],
+        },
   });
 
   const locationId = useWatch({
@@ -177,7 +191,7 @@ export default function ReservationForm({
           loading={isSubmitting}
           disabled={isSubmitting}
         >
-          Save Reservation
+          {submitLabel}
         </Button>
       </Stack>
     </LocalizationProvider>

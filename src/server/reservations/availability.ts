@@ -8,6 +8,7 @@ interface AvailabilityInput {
   equipmentId: string;
   startAt: Date;
   endAt: Date;
+  excludeReservationId?: string;
 }
 
 interface AvailabilityCheckInput extends AvailabilityInput {
@@ -38,6 +39,9 @@ export async function getAvailableQuantity(
   // Availability behavior is part of the candidate challenge.
   const reservations = await db.reservation.findMany({
     where: {
+      ...(input.excludeReservationId
+        ? { id: { not: input.excludeReservationId } }
+        : {}),
       locationId: input.locationId,
       status: "CONFIRMED",
       startAt: { lt: input.endAt },
