@@ -19,7 +19,6 @@ export function CreateReservationForm({
 }: CreateReservationFormProps) {
   const router = useRouter();
   const [serverError, setServerError] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   async function onSubmit(input: ReservationInput) {
     console.log("reservation")

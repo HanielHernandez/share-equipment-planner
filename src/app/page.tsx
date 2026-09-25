@@ -25,7 +25,7 @@ export default async function HomePage() {
             Reservations
           </Typography>
           <Typography color="text.secondary">
-            Review equipment bookings across Austin and Dallas. Times are shown in UTC.
+            Review equipment bookings across Austin and Dallas. Times are shown in your local timezone.
           </Typography>
         </Box>
         <Button

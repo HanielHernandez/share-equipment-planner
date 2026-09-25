@@ -88,6 +88,33 @@ No external services, API keys, authentication providers, cloud accounts, paid c
 
 Do not build authentication or user management, payments, invoicing, taxes, accounting, email/SMS, external API integrations, cloud infrastructure, Redis, Datadog, CI/CD, Trigger.dev workflows, microservices, or event sourcing. Edit Reservation is bonus-only, and automated tests are not required.
 
-## Submission
+## Assumptions
 
-Follow the submission instructions in the assessment document you received.
+- A reservation interval is `[start, end)`. A booking that ends at 12:00 does not block one that starts at 12:00.
+- Only `CONFIRMED` reservations consume inventory. A draft can be saved even when the requested quantity is greater than what is free.
+- The end must be at least one hour after the start.
+- The form saves start and end on the hour. Minutes and seconds are set to zero.
+- Times are stored as UTC instants and shown in the browser's local timezone.
+- The Available column shows the equipment's total quantity at the location, not the quantity still free for the selected period.
+- Availability for a window is that total minus the sum of confirmed quantities that overlap the window at the same location.
+
+## Technical decisions
+
+- Overlap is `existing.start < requestedEnd` and `existing.end > requestedStart`.
+- The form schema uses `z.date()` because the date pickers hold `Date` values. The API schema uses `z.coerce.date()` because JSON sends ISO strings.
+- The schema requires at least one item and a positive whole quantity.
+- `createReservation` checks availability and inserts the reservation plus its `ReservationItem` rows in one Prisma transaction. The check runs only for `CONFIRMED`.
+- A failed confirmation returns a `DomainError` such as `Only 2 Generators are available for the selected period.` The form shows that message.
+- Two lines for the same equipment are combined into one item before the check and the insert.
+
+## Trade-offs
+
+- Summing every overlapping reservation can understate availability. A 09:00–12:00 booking and a 12:00–15:00 booking are both subtracted from a 09:00–15:00 request, even though they do not overlap each other. The amount free for the whole period is the lowest remaining quantity at any moment.
+- Seeded reservations were stored as UTC clock times, so they can appear several hours earlier or later in a local timezone.
+- `locationId` and `equipmentId` still accept an empty string.
+- Edit Reservation is not implemented.
+
+## Production considerations
+
+- Two confirmed requests can both read availability before either insert commits. SQLite has a single writer, so this is unlikely locally. On Postgres, lock the equipment row or run the check and insert at `Serializable` isolation, then retry the request that loses the race.
+- The overlap query uses the index on `(locationId, status, startAt, endAt)`. At higher traffic, cache free quantity per equipment and period, and drop that cache when a confirmed reservation is created or changed.

@@ -22,6 +22,12 @@ import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import ReservationItemsForm from "./reserveration-items-form";
 
+function toHour(value: Date) {
+  const next = new Date(value);
+  next.setMinutes(0, 0, 0);
+  return next;
+}
+
 export type ReservationFormProps = {
   locations: Location[];
   onSubmit: (input: ReservationInput) => Promise<void>;
@@ -31,7 +37,6 @@ export default function ReservationForm({
   locations = [],
   onSubmit,
 }: ReservationFormProps) {
-
   const {
     handleSubmit,
     register,
@@ -41,8 +46,8 @@ export default function ReservationForm({
     resolver: zodResolver(reservationSchema),
     defaultValues: {
       locationId: "",
-      startAt: new Date(),
-      endAt: new Date(),
+      startAt: toHour(new Date()),
+      endAt: toHour(new Date()),
       note: "",
       status: "DRAFT",
       items: [],
@@ -93,7 +98,15 @@ export default function ReservationForm({
           control={control}
           render={({ field, fieldState }) => (
             <FormControl>
-              <DateTimePicker label="Start At" {...field} />
+              <DateTimePicker
+                views={["year", "month", "day", "hours"]}
+                label="Start At"
+                value={field.value}
+                inputRef={field.ref}
+                onChange={(value) => {
+                  field.onChange(value ? toHour(value) : value);
+                }}
+              />
               <FormHelperText error>{fieldState.error?.message}</FormHelperText>
             </FormControl>
           )}
@@ -104,8 +117,16 @@ export default function ReservationForm({
           control={control}
           render={({ field, fieldState }) => (
             <FormControl>
-              <DateTimePicker label="End At" {...field} />
-              <FormHelperText error >{fieldState.error?.message}</FormHelperText>
+              <DateTimePicker
+                views={["year", "month", "day", "hours"]}
+                label="End At"
+                value={field.value}
+                inputRef={field.ref}
+                onChange={(value) => {
+                  field.onChange(value ? toHour(value) : value);
+                }}
+              />
+              <FormHelperText error>{fieldState.error?.message}</FormHelperText>
             </FormControl>
           )}
         />
@@ -127,8 +148,7 @@ export default function ReservationForm({
             <FormControl error={!!fieldState.error}>
               <FormLabel>Status</FormLabel>
 
-              <RadioGroup {...field} row          
-              >
+              <RadioGroup {...field} row>
                 <FormControlLabel
                   value="DRAFT"
                   control={<Radio />}
