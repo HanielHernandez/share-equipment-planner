@@ -1,8 +1,19 @@
+import { CreateReservationForm } from "@/features/reservations/create-reservation-form";
+import ReservationForm from "@/features/reservations/reservation-form";
+import { ReservationInput } from "@/schemas/reservation";
+import { listLocations } from "@/server/locations/list-locations";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from "@mui/material";
-import { Form } from "react-hook-form";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Stack,
+  Typography,
+} from "@mui/material";
 
-export default function NewReservationPage() {
+export default async function NewReservationPage() {
+  const locations = await listLocations();
 
 
   return (
@@ -22,35 +33,9 @@ export default function NewReservationPage() {
       <Card>
         <CardContent>
           <Stack spacing={2.5}>
-            <Stack
-              direction="row"
-              spacing={1}
-              useFlexGap
-              sx={{ alignItems: "center", flexWrap: "wrap" }}
-            >
-              <Chip label="Candidate task" color="secondary" size="small" />
-              <Typography component="h2" variant="h2">
-                Implement Create Reservation
-              </Typography>
-            </Stack>
-            <Divider />
-            <Typography>
-              Build a form for location, start and end date/time, one or more equipment items with
-              quantities, and Draft or Confirmed status.
-            </Typography>
-            <Typography color="text.secondary">
-              Use the existing note editor for the project&apos;s React Hook Form, Zod, API, domain-error,
-              and refresh conventions. The README contains the complete acceptance rules.
-            </Typography>
+            <CreateReservationForm locations={locations} />
+
             {/* TODO(candidate): Implement the Create Reservation form. */}
-
-            <Form>
-
-
-
-            </Form>
-
-
           </Stack>
         </CardContent>
       </Card>
