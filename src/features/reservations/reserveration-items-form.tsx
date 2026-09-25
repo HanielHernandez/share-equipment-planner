@@ -20,6 +20,7 @@ import {
   Control,
   Controller,
   useFieldArray,
+  useFormState,
   useWatch,
 } from "react-hook-form";
 
@@ -42,6 +43,9 @@ export default function ReservationItemsForm({
     name: "items",
   });
 
+  const { errors } = useFormState({ control, name: "items" });
+  const itemsError = errors.items?.message ?? errors.items?.root?.message;
+
   const handleAdd = () => {
     append({
       equipmentId: "",
@@ -57,7 +61,7 @@ export default function ReservationItemsForm({
           justifyContent: "space-between",
         }}
       >
-        <Typography variant="h6"> Reservation Items </Typography>
+        <Typography color="text.secondary" variant="h6"> Reservation Items </Typography>
         <Button type="button" variant="outlined" onClick={handleAdd}>
           Add
         </Button>
@@ -157,6 +161,8 @@ export default function ReservationItemsForm({
           ))}
         </TableBody>
       </Table>
+
+      {itemsError ? <FormHelperText error>{itemsError}</FormHelperText> : null}
     </>
   );
 }

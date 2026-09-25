@@ -7,8 +7,8 @@ const reservationFields = {
     status: z.enum(ReservationStatus),
     items: z.array(z.object({
         equipmentId: z.string(),
-        quantity: z.number()
-    }))
+        quantity: z.number().int().positive("Quantity must be a positive whole number.")
+    })).min(1, "Add at least one equipment item.")
 };
 
 function withMinimumDuration<T extends z.ZodType<{ startAt: Date; endAt: Date }>>(schema: T) {
