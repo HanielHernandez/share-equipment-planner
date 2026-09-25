@@ -91,7 +91,7 @@ export default function ReservationForm({
           name="locationId"
           control={control}
           render={({ field, fieldState }) => (
-            <FormControl>
+            <FormControl error={!!fieldState.error}>
               <InputLabel>Location:</InputLabel>
 
               <Select {...field} label="Location:">

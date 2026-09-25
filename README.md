@@ -102,17 +102,17 @@ Do not build authentication or user management, payments, invoicing, taxes, acco
 
 - Overlap is `existing.start < requestedEnd` and `existing.end > requestedStart`.
 - The form schema uses `z.date()` because the date pickers hold `Date` values. The API schema uses `z.coerce.date()` because JSON sends ISO strings.
-- The schema requires at least one item and a positive whole quantity.
+- The schema requires a location, at least one selected equipment item, and a positive whole quantity.
 - `createReservation` checks availability and inserts the reservation plus its `ReservationItem` rows in one Prisma transaction. The check runs only for `CONFIRMED`.
 - A failed confirmation returns a `DomainError` such as `Only 2 Generators are available for the selected period.` The form shows that message.
 - Two lines for the same equipment are combined into one item before the check and the insert.
+- Edit loads the reservation into the same form and saves with `PUT /api/reservations/:id`. The availability check excludes that reservation so it does not conflict with itself.
 
 ## Trade-offs
 
 - Summing every overlapping reservation can understate availability. A 09:00–12:00 booking and a 12:00–15:00 booking are both subtracted from a 09:00–15:00 request, even though they do not overlap each other. The amount free for the whole period is the lowest remaining quantity at any moment.
 - Seeded reservations were stored as UTC clock times, so they can appear several hours earlier or later in a local timezone.
-- `locationId` and `equipmentId` still accept an empty string.
-- Edit Reservation is not implemented.
+- The Available column shows total quantity at the location, not the quantity still free for the selected period.
 
 ## Production considerations
 

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import ReservationForm from "./reservation-form";
 import { useState } from "react";
 import { Location } from "@/types/location";
-import { Alert, AlertTitle, Stack, Button } from "@mui/material";
+import { Alert } from "@mui/material";
 
 export type CreateReservationFormProps = {
   locations: Location[];
@@ -21,7 +21,6 @@ export function CreateReservationForm({
   const [serverError, setServerError] = useState<string | null>(null);
 
   async function onSubmit(input: ReservationInput) {
-    console.log("reservation")
     setServerError(null);
 
     try {
@@ -38,8 +37,7 @@ export function CreateReservationForm({
       }
 
       router.push(`/`);
-    } catch (e) {
-      console.error("Unexpected reservation note error", e);
+    } catch {
       setServerError("The server could not be reached. Please try again.");
     }
   }

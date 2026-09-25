@@ -131,6 +131,7 @@ export default function ReservationItemsForm({
                   render={({ field, fieldState }) => (
                     <TextField
                       {...field}
+                      label="Requested"
                       type="number"
                       size="small"
                       error={!!fieldState.error}

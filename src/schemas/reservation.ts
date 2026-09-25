@@ -2,11 +2,11 @@ import { ReservationStatus } from "@/generated/prisma/enums";
 import {z} from "zod";
 
 const reservationFields = {
-    locationId: z.string(),
+    locationId: z.string().min(1, "Select a location."),
     note: z.string(),
     status: z.enum(ReservationStatus),
     items: z.array(z.object({
-        equipmentId: z.string(),
+        equipmentId: z.string().min(1, "Select equipment."),
         quantity: z.number().int().positive("Quantity must be a positive whole number.")
     })).min(1, "Add at least one equipment item.")
 };
